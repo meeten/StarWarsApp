@@ -22,5 +22,6 @@ dependencyResolutionManagement {
 rootProject.name = "StarWarsApp"
 include(":app")
  
+include(":domain")
 include(":core")
 include(":core:designsystem")
