@@ -16,9 +16,9 @@ import com.example.loading.Loading
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    homeViewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val uiState = homeViewModel.uiState.collectAsStateWithLifecycle(
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle(
         initialValue = HomeScreenState.Loading,
         minActiveState = Lifecycle.State.RESUMED
     )
@@ -33,8 +33,11 @@ fun HomeScreen(
 
                 is HomeScreenState.Characters -> {
                     CharactersContent(
-                        characters = currentState.items
-                    )
+                        characters = currentState.items,
+                        isLoadingNext = currentState.isLoadingNext
+                    ) {
+                        viewModel.loadNextData()
+                    }
                 }
 
                 is HomeScreenState.Error -> {
