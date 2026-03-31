@@ -1,4 +1,4 @@
-package com.example.di
+package com.example
 
 import com.example.data.network.CharactersRepositoryImpl
 import com.example.data.network.network.ApiService
@@ -8,12 +8,13 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Singleton
 
 @Module
-@InstallIn(Singleton::class)
+@InstallIn(SingletonComponent::class)
 interface DataModule {
 
     @Binds
@@ -23,11 +24,13 @@ interface DataModule {
 
     companion object {
         @Provides
+        @Singleton
         fun provideApiService(): ApiService {
             return ApiFactory.apiService
         }
 
         @Provides
+        @Singleton
         fun provideCoroutineScope(): CoroutineScope {
             return CoroutineScope(Dispatchers.Default)
         }
