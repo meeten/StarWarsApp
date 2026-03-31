@@ -7,12 +7,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.home.model.HomeScreenState
 import com.example.home.ui.CharactersContent
 import com.example.loading.Loading
+import com.example.topbar.CustomTopBar
 
 @Composable
 fun HomeScreen(
@@ -24,7 +26,9 @@ fun HomeScreen(
         minActiveState = Lifecycle.State.RESUMED
     )
 
-    Scaffold {
+    Scaffold(
+        topBar = { CustomTopBar(title = R.string.star_wars_characters) }
+    ) {
         Column(modifier.padding(it)) {
             when (val currentState = uiState.value) {
 
