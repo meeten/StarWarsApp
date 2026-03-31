@@ -15,7 +15,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class CharactersRepositoryImpl @Inject constructor(
     private val apiService: ApiService,
     private val mapper: StarWarsMapper,

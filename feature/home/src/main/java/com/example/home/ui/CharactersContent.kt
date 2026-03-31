@@ -20,7 +20,7 @@ fun CharactersContent(
     characters: List<Character>,
     isLoadingNext: Boolean,
     modifier: Modifier = Modifier,
-    onLoadNextCharacters: () -> Unit
+    loadNextData: () -> Unit
 ) {
     LazyColumn(modifier = modifier) {
         items(items = characters, key = { it.name }) { character ->
@@ -36,11 +36,13 @@ fun CharactersContent(
         item {
             if (isLoadingNext) {
                 Loading(
-                    modifier = Modifier.wrapContentHeight()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
                 )
             } else {
                 SideEffect {
-                    onLoadNextCharacters()
+                    loadNextData()
                 }
             }
         }
