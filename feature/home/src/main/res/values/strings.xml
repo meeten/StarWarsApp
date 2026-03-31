@@ -4,4 +4,5 @@
     <string name="mass">Mass: %1$s kg</string>
     <string name="hair">Hair: %1$s</string>
     <string name="eyes">Eyes: %1$s</string>
+    <string name="star_wars_characters">Star Wars Characters</string>
 </resources>
