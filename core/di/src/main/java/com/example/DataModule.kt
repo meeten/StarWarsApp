@@ -1,9 +1,11 @@
 package com.example
 
-import com.example.data.network.CharactersRepositoryImpl
+import com.example.data.network.repository.CharactersRepositoryImpl
 import com.example.data.network.network.ApiService
 import com.example.domain.repository.CharactersRepository
 import com.example.data.network.network.ApiFactory
+import com.example.data.network.repository.DetailsRepositoryImpl
+import com.example.domain.repository.DetailsRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -21,6 +23,11 @@ interface DataModule {
     fun bindsCharactersRepository(
         impl: CharactersRepositoryImpl
     ): CharactersRepository
+
+    @Binds
+    fun bindsSpeciesRepository(
+        impl: DetailsRepositoryImpl
+    ): DetailsRepository
 
     companion object {
         @Provides
