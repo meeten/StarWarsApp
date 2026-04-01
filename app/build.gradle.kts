@@ -45,10 +45,13 @@ dependencies {
     implementation(project(":core:di"))
     implementation(project(":feature:home"))
 
-    // hilt
+    //hilt
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
+
+    //navigation compose
+    implementation(libs.androidx.navigation.compose)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
