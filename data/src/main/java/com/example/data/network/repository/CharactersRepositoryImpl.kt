@@ -1,4 +1,4 @@
-package com.example.data.network
+package com.example.data.network.repository
 
 import com.example.data.network.mapper.StarWarsMapper
 import com.example.data.network.network.ApiService
@@ -53,24 +53,32 @@ class CharactersRepositoryImpl @Inject constructor(
     }
 
     override val characters =
-        loadedCharacters
-            .map { OperationResult.Success(it) as OperationResult<List<Character>> }
+        loadedCharacters.map { OperationResult.Success(it) as OperationResult<List<Character>> }
             .retry(1) {
                 delay(RETRY_TIMEOUT_MILLS)
                 true
-            }
-            .catch { throwable ->
+            }.catch { throwable ->
                 emit(OperationResult.Failure<List<Character>>(throwable))
-            }
-            .stateIn(
+            }.stateIn(
                 scope = coroutineScope,
-                started = SharingStarted.Lazily,
+                started = SharingStarted.Companion.Lazily,
                 initialValue = OperationResult.Success(emptyList())
             )
 
 
     override suspend fun loadNextCharacters() {
         nextDataNeededEvents.emit(Unit)
+    }
+
+    override fun loadCharacterByName(name: String) = flow {
+        emit(
+            charactersCache[name]
+                ?: throw IllegalStateException("Failed to display character details for name: $name")
+        )
+    }.map {
+        OperationResult.Success(it) as OperationResult<Character>
+    }.catch { throwable ->
+        emit(OperationResult.Failure<Character>(throwable))
     }
 
     private companion object {
