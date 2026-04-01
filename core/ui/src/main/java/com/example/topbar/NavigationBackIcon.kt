@@ -11,10 +11,10 @@ import com.example.ui.R
 @Composable
 fun NavigationBackIcon(
     onClickBack: () -> Unit,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     IconButton(
-        modifier = Modifier,
+        modifier = modifier,
         onClick = onClickBack
     ) {
         Icon(

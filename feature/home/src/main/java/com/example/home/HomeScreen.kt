@@ -27,9 +27,9 @@ fun HomeScreen(
     )
 
     Scaffold(
-        topBar = { CustomTopBar(title = R.string.star_wars_characters) }
+        topBar = { CustomTopBar(title = stringResource(R.string.star_wars_characters)) }
     ) {
-        Column(modifier.padding(it)) {
+        Column(modifier.padding(top = it.calculateTopPadding())) {
             when (val currentState = uiState.value) {
 
                 HomeScreenState.Loading -> {
