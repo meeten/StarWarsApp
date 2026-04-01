@@ -12,7 +12,7 @@ import androidx.compose.ui.res.stringResource
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomTopBar(
-    @StringRes title: Int,
+    title: String,
     modifier: Modifier = Modifier,
     navigationBackIcon: @Composable () -> Unit = {},
 ) {
@@ -20,7 +20,7 @@ fun CustomTopBar(
         modifier = modifier,
         title = {
             Text(
-                text = stringResource(title),
+                text = title,
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSecondary
             )
