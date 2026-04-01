@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="birth_year">Birth Year</string>
+    <string name="height">Height</string>
+    <string name="mass">Mass</string>
+    <string name="gender">Gender</string>
+    <string name="bacis_information">Bacis information</string>
+    <string name="species">Species</string>
+    <string name="films">Films</string>
+    <string name="name">Name: %1$s</string>
+    <string name="langue">Langue: %1$s</string>
+    <string name="no_species_information_available">No species information available</string>
+</resources>
