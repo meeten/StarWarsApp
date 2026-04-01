@@ -2,6 +2,10 @@ package com.example.data.network.mapper
 
 import com.example.domain.model.Character
 import com.example.data.network.network.dtos.CharactersResponseDto
+import com.example.data.network.network.dtos.FilmDto
+import com.example.data.network.network.dtos.SpecieDto
+import com.example.domain.model.Film
+import com.example.domain.model.Specie
 import javax.inject.Inject
 
 class StarWarsMapper @Inject constructor() {
@@ -25,5 +29,19 @@ class StarWarsMapper @Inject constructor() {
             )
         }
         return result
+    }
+
+    fun mapResponseToSpecie(response: SpecieDto): Specie {
+        return Specie(
+            name = response.name,
+            language = response.language
+        )
+    }
+
+    fun mapResponseToFilm(response: FilmDto): Film {
+        return Film(
+            title = response.title,
+            openingCrawl = response.openingCrawl
+        )
     }
 }
