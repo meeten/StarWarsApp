@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.data"
+    namespace = "com.example.db"
     compileSdk {
         version = release(36)
     }
@@ -16,6 +16,8 @@ android {
         consumerProguardFiles("consumer-rules.pro")
     }
 
+
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -25,25 +27,21 @@ android {
             )
         }
     }
+
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 }
 
 dependencies {
 
-    implementation(project(":core:db"))
     implementation(project(":domain"))
 
-    //retrofit
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
-    implementation(libs.okhttp)
-    implementation(libs.logging.interceptor)
-
-    //coroutine
-    implementation(libs.kotlinx.coroutines.core)
+    //room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 
     //inject
     implementation(libs.javax.inject)

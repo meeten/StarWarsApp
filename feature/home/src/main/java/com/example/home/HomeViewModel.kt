@@ -11,7 +11,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onStart
@@ -28,6 +27,7 @@ class HomeViewModel @Inject constructor(
 
     private val isLoadingNextFlow = MutableStateFlow(false)
     private val queryFlow = MutableStateFlow("")
+
     val uiState = queryFlow
         .debounce(300)
         .flatMapLatest { query ->
@@ -36,31 +36,31 @@ class HomeViewModel @Inject constructor(
             } else {
                 searchCharactersByNameUseCase(query)
             }
-        }.mapToScreenState(
+        }
+        .mapToScreenState(
             onSuccess = { characters ->
-                if (characters.isEmpty()) HomeScreenState.Loading
-                else HomeScreenState.Characters(items = characters)
+                HomeScreenState.Characters(
+                    items = characters,
+                    isLoadingNext = isLoadingNextFlow.value
+                )
             },
             onError = { throwable ->
-                HomeScreenState.Error(message = throwable.message ?: "Unknown error")
+                HomeScreenState.Error(
+                    message = throwable.message ?: "Unknown error"
+                )
             }
-        ).combine(isLoadingNextFlow) { state, isLoadingNext ->
-            when (state) {
-                is HomeScreenState.Characters -> {
-                    state.copy(
-                        items = state.items,
-                        isLoadingNext = isLoadingNext
-                    )
-                }
-
-                else -> state
-            }
-        }
-        .onStart {
+        ).onStart {
             emit(HomeScreenState.Loading)
         }
 
+
+    init {
+        loadNextData()
+    }
+
     fun loadNextData() {
+        if (isLoadingNextFlow.value) return
+
         viewModelScope.launch {
             isLoadingNextFlow.value = true
             try {

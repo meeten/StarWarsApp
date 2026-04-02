@@ -2,6 +2,7 @@ package com.example.data.network.repository
 
 import com.example.data.network.mapper.StarWarsMapper
 import com.example.data.network.network.ApiService
+import com.example.domain.datasource.LocalDataSource
 import com.example.domain.model.Character
 import com.example.domain.model.OperationResult
 import com.example.domain.repository.CharactersRepository
@@ -22,6 +23,7 @@ import javax.inject.Singleton
 class CharactersRepositoryImpl @Inject constructor(
     private val apiService: ApiService,
     private val mapper: StarWarsMapper,
+    private val localDataSource: LocalDataSource,
     coroutineScope: CoroutineScope
 ) : CharactersRepository {
 
@@ -29,38 +31,83 @@ class CharactersRepositoryImpl @Inject constructor(
 
     private val charactersCache = mutableMapOf<String, Character>()
     private var nextFrom: String? = null
+    private var isInitialized = false
+
     private val loadedCharacters = flow {
+
+        if (!isInitialized) {
+            val localCharacters = localDataSource.getAllCharacters()
+            val savedNext = localDataSource.getNextPageUrl()
+
+            localCharacters.forEach {
+                charactersCache[it.name] = it
+            }
+
+            nextFrom = savedNext
+
+            if (charactersCache.isNotEmpty()) {
+                emit(charactersCache.values.toList())
+            }
+
+            isInitialized = true
+        }
+
         nextDataNeededEvents.emit(Unit)
+
         nextDataNeededEvents.collect {
+
             val startFrom = nextFrom
+
             if (startFrom == null && charactersCache.isNotEmpty()) {
                 emit(charactersCache.values.toList())
                 return@collect
             }
 
-            val response = if (startFrom == null) {
-                apiService.loadCharacters()
-            } else {
-                apiService.loadCharacters(fullUrl = startFrom)
-            }
+            try {
+                val response = if (startFrom == null) {
+                    apiService.loadCharacters()
+                } else {
+                    apiService.loadCharacters(fullUrl = startFrom)
+                }
 
-            nextFrom = response.next
-            val characters = mapper.mapResponseToCharacters(response)
-            characters.forEach { character ->
-                charactersCache[character.name] = character
+                nextFrom = response.next
+
+                val characters = mapper.mapResponseToCharacters(response)
+
+                characters.forEach { character ->
+                    charactersCache[character.name] = character
+                }
+
+                val updatedList = charactersCache.values.toList()
+
+                localDataSource.saveCharacters(updatedList)
+                localDataSource.saveNextPageUrl(nextFrom)
+
+                emit(updatedList)
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+
+                if (charactersCache.isNotEmpty()) {
+                    emit(charactersCache.values.toList())
+                } else {
+                    throw e
+                }
             }
-            emit(charactersCache.values.toList())
         }
     }
 
     override val characters =
-        loadedCharacters.map { OperationResult.Success(it) as OperationResult<List<Character>> }
+        loadedCharacters
+            .map { OperationResult.Success(it) as OperationResult<List<Character>> }
             .retry(1) {
                 delay(RETRY_TIMEOUT_MILLS)
                 true
-            }.catch { throwable ->
+            }
+            .catch { throwable ->
                 emit(OperationResult.Failure<List<Character>>(throwable))
-            }.stateIn(
+            }
+            .stateIn(
                 scope = coroutineScope,
                 started = SharingStarted.Lazily,
                 initialValue = OperationResult.Success(emptyList())
@@ -83,11 +130,10 @@ class CharactersRepositoryImpl @Inject constructor(
             emit(OperationResult.Failure<List<Character>>(throwable))
         }
 
-
     override fun loadCharacterByName(name: String) = flow {
         emit(
             charactersCache[name]
-                ?: throw IllegalStateException("Failed to display character details for name: $name")
+                ?: localDataSource.getCharacterByName(name)
         )
     }.map {
         OperationResult.Success(it) as OperationResult<Character>
