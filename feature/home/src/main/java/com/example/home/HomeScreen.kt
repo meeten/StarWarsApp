@@ -19,7 +19,8 @@ import com.example.topbar.CustomTopBar
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel(),
+    onClickCharacter: (String) -> Unit
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle(
         initialValue = HomeScreenState.Loading,
@@ -39,10 +40,10 @@ fun HomeScreen(
                 is HomeScreenState.Characters -> {
                     CharactersContent(
                         characters = currentState.items,
-                        isLoadingNext = currentState.isLoadingNext
-                    ) {
-                        viewModel.loadNextData()
-                    }
+                        isLoadingNext = currentState.isLoadingNext,
+                        loadNextData = { viewModel.loadNextData() },
+                        onClickCharacter = onClickCharacter,
+                    )
                 }
 
                 is HomeScreenState.Error -> {

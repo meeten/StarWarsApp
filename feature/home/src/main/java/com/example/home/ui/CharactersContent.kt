@@ -1,5 +1,6 @@
 package com.example.home.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,11 +22,17 @@ fun CharactersContent(
     characters: List<Character>,
     isLoadingNext: Boolean,
     modifier: Modifier = Modifier,
-    loadNextData: () -> Unit
+    loadNextData: () -> Unit,
+    onClickCharacter: (String) -> Unit
 ) {
     LazyColumn(modifier = modifier) {
         items(items = characters, key = { it.name }) { character ->
-            CustomCard {
+            CustomCard(
+                modifier = Modifier
+                    .clickable {
+                        onClickCharacter(character.name)
+                    }
+            ) {
                 InfoText(
                     firstLine = character.name,
                     secondLine = character.getHorizontalStatistics(),
@@ -78,7 +85,9 @@ private fun CharactersContentPreview() {
     StarWarsAppTheme {
         CharactersContent(
             characters = getCharactersPreview(),
-            isLoadingNext = false
-        ) {}
+            isLoadingNext = false,
+            loadNextData = {},
+            onClickCharacter = {}
+        )
     }
 }
