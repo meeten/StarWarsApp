@@ -39,6 +39,7 @@ fun CharacterScreen(
         topBar = {
             CustomTopBar(
                 title = name,
+                isCenterAlignment = true,
                 navigationBackIcon = {
                     NavigationBackIcon(onClickBack = onClickBack)
                 }
