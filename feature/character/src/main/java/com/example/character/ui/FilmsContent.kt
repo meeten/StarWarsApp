@@ -21,7 +21,7 @@ fun FilmsContent(
     if (films.isEmpty()) {
         CustomCard {
             Text(
-                text = stringResource(R.string.no_species_information_available),
+                text = stringResource(R.string.no_films_information_available),
                 modifier = Modifier.padding(16.dp),
                 textAlign = TextAlign.Center
             )

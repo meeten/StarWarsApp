@@ -1,10 +1,10 @@
 package com.example.character
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -21,7 +21,7 @@ import com.example.topbar.NavigationBackIcon
 @Composable
 fun CharacterScreen(
     name: String,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     characterViewModel: CharacterViewModel = hiltViewModel(),
     onClickBack: () -> Unit
 ) {
@@ -50,7 +50,7 @@ fun CharacterScreen(
         ) {
             when (val currentState = uiState.value) {
                 CharacterDetailScreenState.Loading -> {
-                    Loading()
+                    Loading(modifier = Modifier.fillMaxSize())
                 }
 
                 is CharacterDetailScreenState.Data -> {
