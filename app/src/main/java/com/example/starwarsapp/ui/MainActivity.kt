@@ -1,13 +1,13 @@
-package com.example.starwarsapp
+package com.example.starwarsapp.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.character.CharacterScreen
 import com.example.designsystem.theme.StarWarsAppTheme
 import com.example.home.HomeScreen
@@ -21,6 +21,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
+            val viewModel: MainViewModel = hiltViewModel()
             val navigationState = rememberNavigationState()
 
             StarWarsAppTheme {
@@ -36,7 +37,9 @@ class MainActivity : ComponentActivity() {
                             CharacterScreen(
                                 name = characterName
                             ) {
-                                navigationState.navController.popBackStack()
+                                viewModel.onClickButton {
+                                    navigationState.navController.popBackStack()
+                                }
                             }
                         }
                     )
