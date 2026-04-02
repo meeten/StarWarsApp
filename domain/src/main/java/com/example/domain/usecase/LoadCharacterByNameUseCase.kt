@@ -10,8 +10,9 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class LoadCharacterByNameUseCase(
+class LoadCharacterByNameUseCase @Inject constructor(
     private val charactersRepository: CharactersRepository,
     private val detailsRepository: DetailsRepository
 ) {

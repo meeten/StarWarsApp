@@ -6,22 +6,26 @@ import androidx.lifecycle.viewModelScope
 import com.example.character.model.CharacterDetailScreenState
 import com.example.common.mapToScreenState
 import com.example.domain.usecase.LoadCharacterByNameUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class CharacterViewModel(
+@HiltViewModel
+class CharacterViewModel @Inject constructor(
     loadCharacterByNameUseCase: LoadCharacterByNameUseCase,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     val uiState = savedStateHandle
-        .getStateFlow(CHARACTER_NAME_KEY, null)
-        .filterNotNull()
+        .getStateFlow(CHARACTER_NAME_KEY, "")
+        .filter { it.isNotBlank() }
         .flatMapLatest {
             loadCharacterByNameUseCase(it)
                 .mapToScreenState(
