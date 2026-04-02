@@ -7,6 +7,7 @@ import com.example.domain.model.OperationResult
 import com.example.domain.repository.CharactersRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
@@ -48,7 +49,7 @@ class CharactersRepositoryImpl @Inject constructor(
             characters.forEach { character ->
                 charactersCache[character.name] = character
             }
-            emit(characters)
+            emit(charactersCache.values.toList())
         }
     }
 
@@ -61,14 +62,27 @@ class CharactersRepositoryImpl @Inject constructor(
                 emit(OperationResult.Failure<List<Character>>(throwable))
             }.stateIn(
                 scope = coroutineScope,
-                started = SharingStarted.Companion.Lazily,
+                started = SharingStarted.Lazily,
                 initialValue = OperationResult.Success(emptyList())
             )
-
 
     override suspend fun loadNextCharacters() {
         nextDataNeededEvents.emit(Unit)
     }
+
+    override fun searchCharactersByName(query: String): Flow<OperationResult<List<Character>>> =
+        flow {
+            val response = apiService.searchCharactersByName(query)
+            emit(mapper.mapResponseToCharacters(response))
+        }.map {
+            OperationResult.Success(it) as OperationResult<List<Character>>
+        }.retry(1) {
+            delay(RETRY_TIMEOUT_MILLS)
+            true
+        }.catch { throwable ->
+            emit(OperationResult.Failure<List<Character>>(throwable))
+        }
+
 
     override fun loadCharacterByName(name: String) = flow {
         emit(

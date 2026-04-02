@@ -4,6 +4,7 @@ import com.example.data.network.network.dtos.CharactersResponseDto
 import com.example.data.network.network.dtos.FilmDto
 import com.example.data.network.network.dtos.SpecieDto
 import retrofit2.http.GET
+import retrofit2.http.Query
 import retrofit2.http.Url
 
 interface ApiService {
@@ -14,6 +15,11 @@ interface ApiService {
     @GET
     suspend fun loadCharacters(
         @Url fullUrl: String
+    ): CharactersResponseDto
+
+    @GET("people/")
+    suspend fun searchCharactersByName(
+        @Query("search") query: String
     ): CharactersResponseDto
 
     @GET

@@ -5,24 +5,38 @@ import androidx.lifecycle.viewModelScope
 import com.example.common.mapToScreenState
 import com.example.domain.usecase.LoadCharactersUseCase
 import com.example.domain.usecase.LoadNextCharactersUseCase
+import com.example.domain.usecase.SearchCharactersByNameUseCase
 import com.example.home.model.HomeScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
+@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 class HomeViewModel @Inject constructor(
     loadCharactersUseCase: LoadCharactersUseCase,
-    private val loadNextCharactersUseCase: LoadNextCharactersUseCase
+    searchCharactersByNameUseCase: SearchCharactersByNameUseCase,
+    private val loadNextCharactersUseCase: LoadNextCharactersUseCase,
 ) : ViewModel() {
 
     private val isLoadingNextFlow = MutableStateFlow(false)
-
-    val uiState = loadCharactersUseCase()
-        .mapToScreenState(
+    private val queryFlow = MutableStateFlow("")
+    val uiState = queryFlow
+        .debounce(300)
+        .flatMapLatest { query ->
+            if (query.isBlank()) {
+                loadCharactersUseCase()
+            } else {
+                searchCharactersByNameUseCase(query)
+            }
+        }.mapToScreenState(
             onSuccess = { characters ->
                 if (characters.isEmpty()) HomeScreenState.Loading
                 else HomeScreenState.Characters(items = characters)
@@ -41,7 +55,8 @@ class HomeViewModel @Inject constructor(
 
                 else -> state
             }
-        }.onStart {
+        }
+        .onStart {
             emit(HomeScreenState.Loading)
         }
 
@@ -54,5 +69,9 @@ class HomeViewModel @Inject constructor(
                 isLoadingNextFlow.value = false
             }
         }
+    }
+
+    fun search(query: String) {
+        queryFlow.value = query
     }
 }
