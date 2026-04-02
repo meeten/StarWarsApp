@@ -5,4 +5,5 @@
     <string name="hair">Hair: %1$s</string>
     <string name="eyes">Eyes: %1$s</string>
     <string name="star_wars_characters">Star Wars Characters</string>
+    <string name="search_characters">Search characters...</string>
 </resources>
