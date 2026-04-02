@@ -8,8 +8,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.character.CharacterScreen
 import com.example.designsystem.theme.StarWarsAppTheme
 import com.example.home.HomeScreen
+import com.example.starwarsapp.navigation.AppNavGraph
+import com.example.starwarsapp.navigation.rememberNavigationState
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -18,9 +21,25 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val navigationState = rememberNavigationState()
+
             StarWarsAppTheme {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    HomeScreen()
+                    AppNavGraph(
+                        navController = navigationState.navController,
+                        homeScreenContent = {
+                            HomeScreen { characterName ->
+                                navigationState.navigateToCharacter(characterName)
+                            }
+                        },
+                        characterScreenContent = { characterName ->
+                            CharacterScreen(
+                                name = characterName
+                            ) {
+                                navigationState.navController.popBackStack()
+                            }
+                        }
+                    )
                 }
             }
         }
