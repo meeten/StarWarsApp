@@ -23,20 +23,24 @@ class LoadCharacterByNameUseCase @Inject constructor(
                 is OperationResult.Success -> {
                     val character = result.data
 
-                    val loadSpecies = coroutineScope {
-                        character.species.map { url ->
-                            async {
-                                detailsRepository.loadSpecieByUrl(url)
-                            }
-                        }.awaitAll()
+                    val loadSpecies = safeLoad {
+                        coroutineScope {
+                            character.species.map { url ->
+                                async {
+                                    detailsRepository.loadSpecieByUrl(url)
+                                }
+                            }.awaitAll()
+                        }
                     }
 
-                    val loadFilms = coroutineScope {
-                        character.films.map { url ->
-                            async {
-                                detailsRepository.loadFilmByUrl(url)
-                            }
-                        }.awaitAll()
+                    val loadFilms = safeLoad {
+                        coroutineScope {
+                            character.films.map { url ->
+                                async {
+                                    detailsRepository.loadFilmByUrl(url)
+                                }
+                            }.awaitAll()
+                        }
                     }
 
                     OperationResult.Success(
@@ -52,8 +56,16 @@ class LoadCharacterByNameUseCase @Inject constructor(
                     OperationResult.Failure(result.throwable)
                 }
             }
-        }.catch {
-            emit(OperationResult.Failure(it))
+        }.catch { throwable ->
+            emit(OperationResult.Failure(throwable))
         }
+    }
+}
+
+private suspend fun <T> safeLoad(block: suspend () -> List<T>): List<T> {
+    return try {
+        block()
+    } catch (_: Exception) {
+        emptyList()
     }
 }
