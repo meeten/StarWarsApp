@@ -11,8 +11,6 @@ interface LocalDataSource {
 
     suspend fun getCharacterByName(name: String): Character
 
-    suspend fun searchCharactersByName(name: String): List<Character>
-
     suspend fun getNextPageUrl(): String?
 
     suspend fun saveNextPageUrl(nextPageUrl: String?)

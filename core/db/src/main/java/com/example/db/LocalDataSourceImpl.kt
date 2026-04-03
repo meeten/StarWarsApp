@@ -35,11 +35,6 @@ class LocalDataSourceImpl @Inject constructor(
         )
     }
 
-    override suspend fun searchCharactersByName(name: String): List<Character> {
-        val entities = charactersDao.searchCharactersByName(name)
-        return mapper.mapEntityToCharacters(entities)
-    }
-
     override suspend fun getNextPageUrl(): String? {
         val entity = charactersDao.getNextPageUrl() ?: return null
         return mapper.mapEntityToNextPageUrlString(entity)

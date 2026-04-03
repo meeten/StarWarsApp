@@ -13,9 +13,6 @@ interface CharactersDao {
     @Query("SELECT * FROM characters")
     suspend fun getAllCharacters(): List<CharacterEntity>
 
-    @Query("SELECT * FROM characters WHERE name LIKE '%' || :name || '%'")
-    suspend fun searchCharactersByName(name: String): List<CharacterEntity>
-
     @Query("SELECT * FROM pageUrl")
     suspend fun getNextPageUrl(): NextPageUrlEntity?
 

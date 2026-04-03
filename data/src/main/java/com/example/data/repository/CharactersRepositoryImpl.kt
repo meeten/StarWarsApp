@@ -119,7 +119,18 @@ class CharactersRepositoryImpl @Inject constructor(
 
     override fun searchCharactersByName(query: String): Flow<OperationResult<List<Character>>> =
         flow {
+            val localResult = charactersCache.values.filter { character ->
+                character.name.contains(query, ignoreCase = true)
+            }
+            if (localResult.isNotEmpty()) {
+                emit(localResult)
+            }
+
             val response = apiService.searchCharactersByName(query)
+            val networkCharacters = mapper.mapResponseToCharacters(response)
+            networkCharacters.forEach { character ->
+                charactersCache[character.name] = character
+            }
             emit(mapper.mapResponseToCharacters(response))
         }.map {
             OperationResult.Success(it) as OperationResult<List<Character>>
