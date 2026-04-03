@@ -14,6 +14,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.character.extension.getFieldsInfo
 import com.example.character.model.CharacterDetailScreenState
 import com.example.character.ui.CharacterContent
+import com.example.info.EmptyStateText
 import com.example.loading.Loading
 import com.example.topbar.CustomTopBar
 import com.example.topbar.NavigationBackIcon
@@ -63,7 +64,10 @@ fun CharacterScreen(
                 }
 
                 is CharacterDetailScreenState.Error -> {
-                    Text(text = currentState.message)
+                    EmptyStateText(
+                        text = currentState.message,
+                        modifier = Modifier.fillMaxSize()
+                    )
                 }
             }
         }

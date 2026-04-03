@@ -17,6 +17,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.home.model.HomeScreenState
 import com.example.home.ui.CharactersContent
 import com.example.home.ui.CustomSearchBar
+import com.example.info.EmptyStateText
 import com.example.loading.Loading
 import com.example.topbar.CustomTopBar
 
@@ -61,7 +62,10 @@ fun HomeScreen(
                 }
 
                 is HomeScreenState.Error -> {
-                    Text(text = currentState.message)
+                    EmptyStateText(
+                        text = currentState.message,
+                        modifier = Modifier.fillMaxSize()
+                    )
                 }
             }
         }
