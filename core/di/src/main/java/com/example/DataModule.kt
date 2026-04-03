@@ -1,10 +1,10 @@
 package com.example
 
 import android.app.Application
-import com.example.data.network.network.ApiFactory
-import com.example.data.network.network.ApiService
-import com.example.data.network.repository.CharactersRepositoryImpl
-import com.example.data.network.repository.DetailsRepositoryImpl
+import com.example.data.network.ApiFactory
+import com.example.data.network.ApiService
+import com.example.data.repository.CharactersRepositoryImpl
+import com.example.data.repository.DetailsRepositoryImpl
 import com.example.db.CharactersDatabase
 import com.example.db.LocalDataSourceImpl
 import com.example.db.dao.CharactersDao
@@ -15,7 +15,6 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

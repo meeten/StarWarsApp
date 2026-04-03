@@ -1,7 +1,7 @@
-package com.example.data.network.repository
+package com.example.data.repository
 
-import com.example.data.network.mapper.StarWarsMapper
-import com.example.data.network.network.ApiService
+import com.example.data.mapper.StarWarsMapper
+import com.example.data.network.ApiService
 import com.example.domain.model.Film
 import com.example.domain.model.Specie
 import com.example.domain.repository.DetailsRepository

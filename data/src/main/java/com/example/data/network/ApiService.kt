@@ -1,8 +1,8 @@
-package com.example.data.network.network
+package com.example.data.network
 
-import com.example.data.network.network.dtos.CharactersResponseDto
+import com.example.data.network.dtos.CharactersResponseDto
 import com.example.data.network.network.dtos.FilmDto
-import com.example.data.network.network.dtos.SpecieDto
+import com.example.data.network.dtos.SpecieDto
 import retrofit2.http.GET
 import retrofit2.http.Query
 import retrofit2.http.Url

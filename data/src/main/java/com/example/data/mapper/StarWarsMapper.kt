@@ -1,9 +1,9 @@
-package com.example.data.network.mapper
+package com.example.data.mapper
 
-import com.example.domain.model.Character
-import com.example.data.network.network.dtos.CharactersResponseDto
+import com.example.data.network.dtos.CharactersResponseDto
+import com.example.data.network.dtos.SpecieDto
 import com.example.data.network.network.dtos.FilmDto
-import com.example.data.network.network.dtos.SpecieDto
+import com.example.domain.model.Character
 import com.example.domain.model.Film
 import com.example.domain.model.Specie
 import javax.inject.Inject
