@@ -1,5 +1,6 @@
 package com.example.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.common.mapToScreenState
@@ -11,9 +12,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,7 +34,9 @@ class HomeViewModel @Inject constructor(
 
     val uiState = queryFlow
         .debounce(300)
+        .distinctUntilChanged()
         .flatMapLatest { query ->
+            Log.d("HomeViewModel", query)
             if (query.isBlank()) {
                 loadCharactersUseCase()
             } else {
@@ -51,7 +57,11 @@ class HomeViewModel @Inject constructor(
             }
         ).onStart {
             emit(HomeScreenState.Loading)
-        }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = HomeScreenState.Loading
+        )
 
 
     init {
@@ -72,6 +82,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun search(query: String) {
+        Log.d("HomeViewModel", "sear")
         queryFlow.value = query
     }
 }
