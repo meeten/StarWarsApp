@@ -7,18 +7,23 @@ import com.example.common.mapToScreenState
 import com.example.domain.usecase.LoadCharactersUseCase
 import com.example.domain.usecase.LoadNextCharactersUseCase
 import com.example.domain.usecase.SearchCharactersByNameUseCase
+import com.example.extension.toUserFriendlyMessage
+import com.example.home.model.HomeErrorEvent
 import com.example.home.model.HomeScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,6 +36,9 @@ class HomeViewModel @Inject constructor(
 
     private val isLoadingNextFlow = MutableStateFlow(false)
     private val queryFlow = MutableStateFlow("")
+
+    private val _errorEvents = Channel<HomeErrorEvent>()
+    val errorEvents = _errorEvents.receiveAsFlow()
 
     val uiState = queryFlow
         .debounce(300)
@@ -51,9 +59,7 @@ class HomeViewModel @Inject constructor(
                 )
             },
             onError = { throwable ->
-                HomeScreenState.Error(
-                    message = throwable.message ?: "Unknown error"
-                )
+                HomeScreenState.Error(throwable)
             }
         ).onStart {
             emit(HomeScreenState.Loading)
@@ -75,6 +81,8 @@ class HomeViewModel @Inject constructor(
             isLoadingNextFlow.value = true
             try {
                 loadNextCharactersUseCase()
+            } catch (e: Exception) {
+                sendErrorMessage(e)
             } finally {
                 isLoadingNextFlow.value = false
             }
@@ -84,5 +92,14 @@ class HomeViewModel @Inject constructor(
     fun search(query: String) {
         Log.d("HomeViewModel", "sear")
         queryFlow.value = query
+    }
+
+    fun sendErrorMessage(
+        throwable: Throwable
+    ) {
+        viewModelScope.launch {
+            val message = throwable.toUserFriendlyMessage()
+            _errorEvents.send(HomeErrorEvent.ShowError(message))
+        }
     }
 }

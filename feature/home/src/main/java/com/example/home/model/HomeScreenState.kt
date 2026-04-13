@@ -11,5 +11,5 @@ sealed class HomeScreenState {
         val isLoadingNext: Boolean = false
     ) : HomeScreenState()
 
-    data class Error(val message: String) : HomeScreenState()
+    data class Error(val throwable: Throwable) : HomeScreenState()
 }
